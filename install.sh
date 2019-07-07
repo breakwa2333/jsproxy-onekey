@@ -355,7 +355,7 @@ show_information(){
     echo -e "${Red} 端口（port）：${Font} ${port} "
 }
 
-install_bbr_plus(){
+install_bbr(){
     bash -c "$(wget --no-check-certificate -qO- https://github.com/Aniverse/TrCtrlProToc0l/raw/master/A)"
 }
 
@@ -367,7 +367,7 @@ create_user(){
     fi
 }
 run_in_user(){
-    su - jsproxy -c "curl -s $SRC_URL/jsproxy.sh | bash -s install"
+    su - jsproxy -c "curl -s https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/jsproxy.shh | bash -s install"
 }
 
 main(){
@@ -375,23 +375,8 @@ main(){
     check_system
     time_modify
     dependency_install
-    domain_check
-    port_alterid_set
-    port_exist_check 80
-    port_exist_check ${port}
-    nginx_install
-    nginx_conf_add ${domain}
-
-    #改变证书安装位置，防止端口冲突关闭相关应用
-    systemctl stop nginx
-    
-    #将证书生成放在最后，尽量避免多次尝试脚本从而造成的多次证书申请
-    ssl_install
-    acme
-    
-    show_information
-    start_process_systemd
-    acme_cron_update
+    create_user
+    run_in_user
 }
 
 main
