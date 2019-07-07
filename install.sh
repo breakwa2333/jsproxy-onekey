@@ -367,7 +367,7 @@ create_user(){
     fi
 }
 run_in_user(){
-    su - jsproxy -c "curl -s $SRC_URL/i.sh | bash -s install"
+    su - jsproxy -c "curl -s $SRC_URL/jsproxy.sh | bash -s install"
 }
 
 main(){
