@@ -249,12 +249,11 @@ nginx_conf_add(){
     http {
       include                 log.conf;
       server {
-        listen                8080;
+        listen                443;
         ssl on;
         ssl_certificate       cert/$1/ecc.cer;
         ssl_certificate_key   cert/$1/ecc.key;
         server_name           $1;
-        include               cert/cert.conf;
         include               api.conf;
         include               www.conf;
       }
