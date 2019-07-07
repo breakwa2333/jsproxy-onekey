@@ -1,12 +1,5 @@
-﻿#!/bin/bash
-
 #====================================================
 #	System Request:Debian 7+/Ubuntu 14.04+/Centos 6+
-#	Author:	wulabing,breakwa2333
-#	Dscription: V2ray ws+tls onekey 
-#	Version: 1.0.0
-#	Blog: https://www.wulabing.com
-#	Official document: www.v2ray.com
 #====================================================
 
 #fonts color
@@ -144,8 +137,6 @@ dependency_install(){
 port_alterid_set(){
     stty erase '^H' && read -p "请输入连接端口（default:443）:" port
     [[ -z ${port} ]] && port="443"
-    stty erase '^H' && read -p "请输入alterID（default:64）:" alterID
-    [[ -z ${alterID} ]] && alterID="64"
 }
 modify_port_UUID(){
     let PORT=$RANDOM+10000
@@ -166,33 +157,6 @@ modify_nginx(){
     sed -i "/proxy_pass/c \\\tproxy_pass http://127.0.0.1:${PORT};" ${nginx_conf}
     sed -i "/return/c \\\treturn 301 https://${domain}\$request_uri;" ${nginx_conf}
     sed -i "27i \\\tproxy_intercept_errors on;"  /etc/nginx/nginx.conf
-}
-web_camouflage(){
-    ##请注意 这里和LNMP脚本的默认路径冲突，千万不要在安装了LNMP的环境下使用本脚本，否则后果自负
-    rm -rf /home/webroot && mkdir -p /home/webroot && mkdir -p /home/webtemp
-    pathing=$[$[$RANDOM % 5] + 1] 
-    wget https://github.com/breakwa2333/v2ray-onekey/blob/master/template/$pathing.zip?raw=true -O /home/webtemp/$pathing.zip
-    unzip -d /home/webroot /home/webtemp/$pathing.zip
-    wget https://raw.githubusercontent.com/breakwa2333/jsproxy/gh-pages/assets/bundle.0668cc6d.js -O /home/webroot/bundle.0668cc6d.js
-    judge "web 站点伪装"   
-}
-v2ray_install(){
-    if [[ -d /root/v2ray ]];then
-        rm -rf /root/v2ray
-    fi
-
-    mkdir -p /root/v2ray && cd /root/v2ray
-    wget --no-check-certificate https://install.direct/go.sh
-
-    ## wget http://install.direct/go.sh
-    
-    if [[ -f go.sh ]];then
-        bash go.sh --force --version v4.18.0
-        judge "安装 V2ray"
-    else
-        echo -e "${Error} ${RedBG} V2ray 安装文件下载失败，请检查下载地址是否可用 ${Font}"
-        exit 4
-    fi
 }
 nginx_install(){
     ${INS} install nginx -y
@@ -222,7 +186,8 @@ ssl_install(){
 
 }
 domain_check(){
-    stty erase '^H' && read -p "请输入你的域名信息(eg:www.v2ray.com):" domain
+    stty erase '^H' && read -p "请输入你的域名信息(default:IP.nip.io):" domain
+    [[ -z ${domain} ]] && domain=$(curl -s https://api.ipify.org).nip.io
     domain_ip=`ping ${domain} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
     echo -e "${OK} ${GreenBG} 正在获取 公网ip 信息，请耐心等待 ${Font}"
     local_ip=`curl -4 ip.sb`
@@ -250,6 +215,11 @@ domain_check(){
 port_exist_check(){
     if [[ 0 -eq `lsof -i:"$1" | wc -l` ]];then
         echo -e "${OK} ${GreenBG} $1 端口未被占用 ${Font}"
+        if [$1 == "80"];then
+            iptables -t nat -A PREROUTING -p tcp --dport $1 -j REDIRECT --to-ports 10080
+        else
+            iptables -t nat -A PREROUTING -p tcp --dport $1 -j REDIRECT --to-ports 8443
+        fi
         sleep 1
     else
         echo -e "${Error} ${RedBG} 检测到 $1 端口被占用，以下为 $1 端口占用信息 ${Font}"
@@ -267,7 +237,7 @@ acme(){
     if [[ $? -eq 0 ]];then
         echo -e "${OK} ${GreenBG} SSL 证书生成成功 ${Font}"
         sleep 2
-        ~/.acme.sh/acme.sh --installcert -d ${domain} --fullchainpath /etc/v2ray/v2ray.crt --keypath /etc/v2ray/v2ray.key --ecc
+        ~/.acme.sh/acme.sh --installcert -d ${domain} --fullchainpath cert/$domain/ecc.cer --keypath cert/$domain/ecc.key --ecc
         if [[ $? -eq 0 ]];then
         echo -e "${OK} ${GreenBG} 证书配置成功 ${Font}"
         sleep 2
@@ -277,41 +247,78 @@ acme(){
         exit 1
     fi
 }
-v2ray_conf_add(){
-    cd /etc/v2ray
-    wget https://raw.githubusercontent.com/breakwa2333/v2ray-onekey/master/tls/config.json -O config.json
-modify_port_UUID
-judge "V2ray 配置修改"
-}
 nginx_conf_add(){
-    touch ${nginx_conf_dir}/v2ray.conf
-    cat>${nginx_conf_dir}/v2ray.conf<<EOF
-    server {
-        listen 443 ssl;
+    touch ${nginx_conf_dir}/jsproxy.conf
+    cat>${nginx_conf_dir}/jsproxy.conf<<EOF
+    http {
+      include                 log.conf;
+      server {
+        listen                8080;
         ssl on;
-        ssl_certificate       /etc/v2ray/v2ray.crt;
-        ssl_certificate_key   /etc/v2ray/v2ray.key;
-        ssl_protocols         TLSv1.2;
-        ssl_ciphers           AESGCM;
-        server_name           serveraddr.com;
-        index index.html index.htm;
-        root  /home/webroot;
-        error_page 400 = /400.html;
-        location /ray/ 
-        {
-        proxy_redirect off;
-        proxy_pass http://127.0.0.1:10000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$http_host;
-        }
-        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-}
-    server {
+        ssl_certificate       cert/$1/ecc.cer;
+        ssl_certificate_key   cert/$1/ecc.key;
+        server_name           $1;
+        include               cert/cert.conf;
+        include               api.conf;
+        include               www.conf;
+      }
+      server {
         listen 80;
         server_name serveraddr.com;
-        return 301 https://use.shadowsocksr.win\$request_uri;
+        return 301 https://$1\$request_uri;
+      }
+      include                 acme.conf;
+
+      # https://nginx.org/en/docs/http/ngx_http_core_module.html
+      resolver                1.1.1.1 ipv6=off;
+      resolver_timeout        10s;
+
+      keepalive_timeout       60;
+      keepalive_requests      2048;
+      server_tokens           off;
+      underscores_in_headers  on;
+
+      # https://nginx.org/en/docs/http/ngx_http_ssl_module.html
+      ssl_protocols           TLSv1.2 TLSv1.3;
+      ssl_ciphers             TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-256-GCM-SHA384:TLS13-AES-128-GCM-SHA256:EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
+      ssl_session_cache       shared:SSL:30m;
+      ssl_session_timeout     1d;
+      ssl_prefer_server_ciphers on;
+
+      # https://nginx.org/en/docs/http/ngx_http_limit_req_module.html
+      limit_req_log_level     warn;
+      limit_req_zone          $binary_remote_addr zone=reqip:16m rate=100r/s;
+      limit_req               zone=reqip burst=200 nodelay;
+
+      access_log              logs/proxy.log log_proxy buffer=64k flush=1s;
+
+      # https://nginx.org/cn/docs/http/ngx_http_proxy_module.html
+      # 1MB = 8000key
+      proxy_cache_path        cache
+        levels=1:2
+        keys_zone=my_cache:32m
+        max_size=20g
+        inactive=6h
+        use_temp_path=off
+      ;
+      proxy_http_version      1.1;
+      proxy_ssl_server_name   on;
+
+      proxy_buffer_size       16k;
+      proxy_buffers           4 32k;
+      proxy_busy_buffers_size 64k;
+      proxy_send_timeout      10s;
+
+      lua_load_resty_core     off;
+
+      map $http_origin $_origin_id {
+        include               allowed-sites.conf;
+      }
+    }
+
+    # https://nginx.org/en/docs/ngx_core_module.html
+    events {
+      worker_connections      4096;
     }
 EOF
 
@@ -342,25 +349,25 @@ acme_cron_update(){
 }
 show_information(){
     clear
-
-    echo -e "${OK} ${Green} V2ray+ws+tls 安装成功 "
-    echo -e "${Red} V2ray 配置信息 ${Font}"
+    echo -e "${OK} ${Green} jsproxy 安装成功 "
+    echo -e "${Red} jsproxy 配置信息 ${Font}"
     echo -e "${Red} 地址（address）:${Font} ${domain} "
     echo -e "${Red} 端口（port）：${Font} ${port} "
-    echo -e "${Red} 用户id（UUID）：${Font} ${UUID}"
-    echo -e "${Red} 额外id（alterId）：${Font} ${alterID}"
-    echo -e "${Red} 加密方式（security）：${Font} 自适应 "
-    echo -e "${Red} 传输协议（network）：${Font} ws "
-    echo -e "${Red} 伪装类型（type）：${Font} none "
-    echo -e "${Red} 路径（不要落下/）：${Font} /${camouflage}/ "
-    echo -e "${Red} 底层传输安全：${Font} tls "
-
-    
-
 }
 
 install_bbr_plus(){
     bash -c "$(wget --no-check-certificate -qO- https://github.com/Aniverse/TrCtrlProToc0l/raw/master/A)"
+}
+
+create_user(){
+    if ! id -u jsproxy > /dev/null 2>&1 ; then
+      log "创建用户 jsproxy ..."
+      groupadd nobody > /dev/null 2>&1
+      useradd jsproxy -g nobody --create-home
+    fi
+}
+run_in_user(){
+    su - jsproxy -c "curl -s $SRC_URL/i.sh | bash -s install"
 }
 
 main(){
@@ -372,15 +379,11 @@ main(){
     port_alterid_set
     port_exist_check 80
     port_exist_check ${port}
-    v2ray_install
     nginx_install
-    v2ray_conf_add
-    nginx_conf_add
-    web_camouflage
+    nginx_conf_add ${domain}
 
     #改变证书安装位置，防止端口冲突关闭相关应用
     systemctl stop nginx
-    systemctl stop v2ray
     
     #将证书生成放在最后，尽量避免多次尝试脚本从而造成的多次证书申请
     ssl_install
