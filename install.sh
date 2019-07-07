@@ -188,6 +188,7 @@ ssl_install(){
 domain_check(){
     stty erase '^H' && read -p "请输入你的域名信息(default:IP.nip.io):" domain
     [[ -z ${domain} ]] && domain=$(curl -s https://api.ipify.org).nip.io
+    echo -e "${OK} ${GreenBG} 域名:${domain} ${Font}"
     domain_ip=`ping ${domain} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
     echo -e "${OK} ${GreenBG} 正在获取 公网ip 信息，请耐心等待 ${Font}"
     local_ip=`curl -4 ip.sb`
@@ -215,11 +216,6 @@ domain_check(){
 port_exist_check(){
     if [[ 0 -eq `lsof -i:"$1" | wc -l` ]];then
         echo -e "${OK} ${GreenBG} $1 端口未被占用 ${Font}"
-        if [$1 == "80"];then
-            iptables -t nat -A PREROUTING -p tcp --dport $1 -j REDIRECT --to-ports 10080
-        else
-            iptables -t nat -A PREROUTING -p tcp --dport $1 -j REDIRECT --to-ports 8443
-        fi
         sleep 1
     else
         echo -e "${Error} ${RedBG} 检测到 $1 端口被占用，以下为 $1 端口占用信息 ${Font}"
