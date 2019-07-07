@@ -367,7 +367,7 @@ create_user(){
     fi
 }
 run_in_user(){
-    su - jsproxy -c "curl -s https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/jsproxy.shh | bash -s install"
+    su - jsproxy -c "bash <(curl -L -s dos2unix https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/jsproxy.sh) | tee jsproxy_ins.log"
 }
 
 main(){
