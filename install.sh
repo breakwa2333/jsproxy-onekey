@@ -359,26 +359,33 @@ install_bbr(){
     bash -c "$(wget --no-check-certificate -qO- https://github.com/Aniverse/TrCtrlProToc0l/raw/master/A)"
 }
 
-create_user(){
-    if ! id -u jsproxy > /dev/null 2>&1 ; then
-      echo -e "${OK} ${GreenBG} 创建jsproxy普通用户中 ${Font} 
-      groupadd nobody > /dev/null 2>&1
-      useradd jsproxy -g nobody --create-home
-    fi
-}
-run_in_user(){
-    su - jsproxy -c bash <(curl -L -s dos2unix https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/jsproxy.sh) | tee jsproxy_ins.log
-}
-
 main(){
     is_root
     check_system
     time_modify
     dependency_install
+    
+    domain_check
+    port_alterid_set
+    port_exist_check 80
+    port_exist_check ${port}
     nginx_install
+    nginx_conf_add ${domain}
+    nginx_modify
+
+    #改变证书安装位置，防止端口冲突关闭相关应用
+    systemctl stop nginx
+    
+    #将证书生成放在最后，尽量避免多次尝试脚本从而造成的多次证书申请
     ssl_install
-    create_user
-    run_in_user
+    acme
+    
+    show_information
+    start_process_systemd
+    acme_cron_update
+    echo -e "${OK} ${GreenBG} 10秒后即将安装加速工具 "
+    sleep 10
+    install_bbr
 }
 
 main
