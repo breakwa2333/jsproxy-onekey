@@ -361,7 +361,7 @@ install_bbr(){
 
 create_user(){
     if ! id -u jsproxy > /dev/null 2>&1 ; then
-      log "创建用户 jsproxy ..."
+      echo -e "${OK} ${GreenBG} 创建jsproxy普通用户中 ${Font} 
       groupadd nobody > /dev/null 2>&1
       useradd jsproxy -g nobody --create-home
     fi
