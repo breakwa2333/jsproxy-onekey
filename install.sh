@@ -375,6 +375,8 @@ main(){
     check_system
     time_modify
     dependency_install
+    nginx_install
+    ssl_install
     create_user
     run_in_user
 }
