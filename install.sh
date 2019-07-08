@@ -284,8 +284,9 @@ main() {
       
       [Install]
       WantedBy=multi-user.target
-      " > /etc/systemd/system/jsproxy.service
+      " > /lib/systemd/system
   systemctl enable jsproxy.service
+  echo -e "${OK} ${GreenBG} 自启动服务配置完成 ${Font}"
 
   log "切换到 jsproxy 用户，执行安装脚本 ..."
   su jsproxy -c "curl -L -s dos2unix $SRC_URL/install.sh | bash -s install ${host} ${port}"
