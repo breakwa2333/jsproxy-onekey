@@ -237,20 +237,18 @@ main() {
     echo -e "${OK} ${GreenBG} 服务域名已设置为随机二级域名 ${Font}"
   else
     echo -e "${OK} ${GreenBG} 服务域名已设置为${host} ${Font}"
-  fi
-  
-  echo -e "${OK} ${GreenBG} 正在获取 域名公网IP 信息，请耐心等待 ${Font}"
-  domain_ip=`ping ${host} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
-  local_ip=`curl -4 ip.sb`
-  echo -e "域名dns解析IP：${domain_ip}"
-  echo -e "本机IP: ${local_ip}"
-  sleep 2
-  if [[ $(echo ${local_ip}|tr '.' '+'|bc) -eq $(echo ${domain_ip}|tr '.' '+'|bc) ]];then
+    echo -e "${OK} ${GreenBG} 正在获取 域名公网IP 信息，请耐心等待 ${Font}"
+    domain_ip=`ping ${host} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
+    local_ip=`curl -4 ip.sb`
+    echo -e "域名dns解析IP：${domain_ip}"
+    echo -e "本机IP: ${local_ip}"
+    sleep 2
+    if [[ $(echo ${local_ip}|tr '.' '+'|bc) -eq $(echo ${domain_ip}|tr '.' '+'|bc) ]];then
       echo -e "${OK} ${GreenBG} 域名dns解析IP  与 本机IP 匹配 ${Font}"
       sleep 2
-  else
-      echo -e "${Error} ${RedBG} 域名dns解析IP 与 本机IP 不匹配 是否继续安装？（y/n）${Font}" && read install
-      case $install in
+    else
+      echo -e "${Error} ${RedBG} 域名dns解析IP 与 本机IP 不匹配 是否继续安装？（y/n）${Font}" && read still
+      case $still in
       [yY][eE][sS]|[yY])
           echo -e "${GreenBG} 继续安装 ${Font}" 
           sleep 2
@@ -260,6 +258,7 @@ main() {
           exit 2
           ;;
       esac
+    fi
   fi
   
   stty iuclc && read -p "请输入服务端口（default:443）:" port
