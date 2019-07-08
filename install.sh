@@ -277,12 +277,12 @@ main() {
       After=network.target
       
       [Service]
-      ExecStart=$(cd `dirname $0` && pwd)/jsproxy_reboot.sh
+      ExecStart=/home/ubuntu/jsproxy_reboot.sh
       
       [Install]
       WantedBy=default.target
       " > /etc/systemd/system/jsproxy.service
-  chmod 744 $(cd `dirname $0` && pwd)/jsproxy_reboot.sh
+  chmod 744 /home/ubuntu/jsproxy_reboot.sh
   systemctl daemon-reload
   systemctl enable jsproxy.service
   echo -e "${OK} ${GreenBG} 自启动服务配置完成 ${Font}"
