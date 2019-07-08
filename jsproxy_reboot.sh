@@ -11,25 +11,8 @@ Info="${Green}[信息]${Font}"
 OK="${Green}[OK]${Font}"
 Error="${Red}[错误]${Font}"
 
-JSPROXY_VER=master
-OPENRESTY_VER=1.15.8.1
-
-SRC_URL=https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/$JSPROXY_VER
-BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master
-ZIP_URL=https://codeload.github.com/EtherDream/jsproxy/tar.gz
-
-SUPPORTED_OS="Linux-x86_64"
-OS="$(uname)-$(uname -m)"
-USER=$(whoami)
-
 INSTALL_DIR=/home/jsproxy
 NGX_DIR=$INSTALL_DIR/openresty
-
-DOMAIN_SUFFIX=(
-  xip.io
-  nip.io
-  sslip.io
-)
 
 COLOR_RESET="\033[0m"
 COLOR_RED="\033[31m"
