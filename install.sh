@@ -240,7 +240,7 @@ main() {
   fi
   
   echo -e "${OK} ${GreenBG} 正在获取 域名公网IP 信息，请耐心等待 ${Font}"
-  domain_ip=`ping ${domain} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
+  domain_ip=`ping ${host} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
   local_ip=`curl -4 ip.sb`
   echo -e "域名dns解析IP：${domain_ip}"
   echo -e "本机IP: ${local_ip}"
