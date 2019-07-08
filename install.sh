@@ -87,7 +87,7 @@ gen_cert() {
 
   local acme=~/.acme.sh/acme.sh
 
-  if [[ ${1}==“0” ]]; then
+  if [[ ${1} == "0" ]]; then
     for i in ${DOMAIN_SUFFIX[@]}; do
       local domain=$ip.$i
       log "尝试为域名 $domain 申请证书 ..."
@@ -245,12 +245,12 @@ main() {
     -j REDIRECT \
     --to-ports 10080
   
-  stty iuclc && read -p "请输入域名（default:随机二级域名）:" _domain
-  if [[ -z ${_domain} ]]; then
-    _domain="0"
+  stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
+  if [[ -z ${host} ]]; then
+    host="0"
     echo -e "${OK} ${GreenBG} 服务域名已设置为随机二级域名 ${Font}"
   else
-    echo -e "${OK} ${GreenBG} 服务域名已设置为${_domain} ${Font}"
+    echo -e "${OK} ${GreenBG} 服务域名已设置为${host} ${Font}"
   fi
   
   stty iuclc && read -p "请输入服务端口（default:443）:" port
@@ -259,7 +259,7 @@ main() {
   echo -e "${OK} ${GreenBG} 服务端口已设置为${port} ${Font}"
 
   log "切换到 jsproxy 用户，执行安装脚本 ..."
-  su jsproxy -c "curl -L -s dos2unix https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/install.sh | bash -s install ${_domain} ${port}"
+  su jsproxy -c "curl -L -s dos2unix https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/install.sh | bash -s install ${host} ${port}"
 
   local line=$(iptables -t nat -L --line-numbers | grep "acme challenge svc")
   iptables -t nat -D PREROUTING ${line%% *}
