@@ -7,6 +7,10 @@ GreenBG="\033[42;37m"
 RedBG="\033[41;37m"
 Font="\033[0m"
 
+Info="${Green}[信息]${Font}"
+OK="${Green}[OK]${Font}"
+Error="${Red}[错误]${Font}"
+
 JSPROXY_VER=master
 OPENRESTY_VER=1.15.8.1
 
