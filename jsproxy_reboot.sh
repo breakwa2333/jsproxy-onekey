@@ -19,5 +19,8 @@ COLOR_RED="\033[31m"
 COLOR_GREEN="\033[32m"
 COLOR_YELLOW="\033[33m"
 
+main(){
+  su jsproxy -c "bash /home/jsproxy/server/run.sh reload" 
+}
 
 } # this ensures the entire script is downloaded #
