@@ -11,7 +11,7 @@ Font="\033[0m"
 JSPROXY_VER=master
 OPENRESTY_VER=1.15.8.1
 
-SRC_URL=https://raw.githubusercontent.com/breakwa2333/jsproxy/$JSPROXY_VER
+SRC_URL=https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/$JSPROXY_VER
 BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master
 ZIP_URL=https://codeload.github.com/EtherDream/jsproxy/tar.gz
 
@@ -259,7 +259,7 @@ main() {
   echo -e "${OK} ${GreenBG} 服务端口已设置为${port} ${Font}"
 
   log "切换到 jsproxy 用户，执行安装脚本 ..."
-  su jsproxy -c "curl -L -s dos2unix https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/install.sh | bash -s install ${host} ${port}"
+  su jsproxy -c "curl -L -s dos2unix $SRC_URL/install.sh | bash -s install ${host} ${port}"
 
   local line=$(iptables -t nat -L --line-numbers | grep "acme challenge svc")
   iptables -t nat -D PREROUTING ${line%% *}
