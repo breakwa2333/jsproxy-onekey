@@ -245,7 +245,7 @@ main() {
     -j REDIRECT \
     --to-ports 10080
   
-  read -p "请输入域名（default:随机二级域名）:" _domain
+  stty iuclc && read -p "请输入域名（default:随机二级域名）:" _domain
   if [[ -z ${_domain} ]]; then
     _domain="0"
     echo -e "${OK} ${GreenBG} 服务域名已设置为随机二级域名 ${Font}"
@@ -253,7 +253,7 @@ main() {
     echo -e "${OK} ${GreenBG} 服务域名已设置为${_domain} ${Font}"
   fi
   
-  read -p "请输入服务端口（default:443）:" port
+  stty iuclc && read -p "请输入服务端口（default:443）:" port
   [[ -z ${port} ]] && port="443"
   iptables -t nat -A PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports 8443
   echo -e "${OK} ${GreenBG} 服务端口已设置为${port} ${Font}"
