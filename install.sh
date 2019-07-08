@@ -1,4 +1,4 @@
-
+#!/bin/sh
 { # this ensures the entire script is downloaded #
 
 Green="\033[32m" 
