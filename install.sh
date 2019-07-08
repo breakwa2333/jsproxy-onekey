@@ -284,7 +284,7 @@ main() {
       
       [Install]
       WantedBy=multi-user.target
-      " > /lib/systemd/system
+      " > /lib/systemd/system/jsproxy.service
   systemctl enable jsproxy.service
   echo -e "${OK} ${GreenBG} 自启动服务配置完成 ${Font}"
 
