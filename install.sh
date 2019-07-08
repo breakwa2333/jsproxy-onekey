@@ -259,7 +259,7 @@ main() {
   echo -e "${OK} ${GreenBG} 服务端口已设置为${port} ${Font}"
 
   log "切换到 jsproxy 用户，执行安装脚本 ..."
-  su - jsproxy -c "curl -L -s dos2unix https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/install.sh | bash -s install ${_domain} ${port}"
+  su jsproxy -c "curl -L -s dos2unix https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/install.sh | bash -s install ${_domain} ${port}"
 
   local line=$(iptables -t nat -L --line-numbers | grep "acme challenge svc")
   iptables -t nat -D PREROUTING ${line%% *}
