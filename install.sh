@@ -28,11 +28,6 @@ DOMAIN_SUFFIX=(
   sslip.io
 )
 
-GET_IP_API=(
-  https://api.ipify.org
-  https://bot.whatismyipaddress.com/
-)
-
 COLOR_RESET="\033[0m"
 COLOR_RED="\033[31m"
 COLOR_GREEN="\033[32m"
@@ -56,24 +51,15 @@ err() {
 }
 
 gen_cert() {
-  local ip=""
+  local ip=`curl -4 ip.sb`
 
-  for i in ${GET_IP_API[@]}; do
-    log "服务器公网 IP 获取中，通过接口 $i"
-    ip=$(curl -s $i)
+  if [[ ! $ip ]]; then
+    warn "IP 获取失败"
+  fi
 
-    if [[ ! $ip ]]; then
-      warn "IP 获取失败"
-      continue
-    fi
-
-    if [[ ! $(grep -E "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" <<< $ip) ]]; then
-      warn "无效 IP：$ip"
-      continue
-    fi
-
-    break
-  done
+  if [[ ! $(grep -E "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" <<< $ip) ]]; then
+    warn "无效 IP：$ip"
+  fi
 
   if [[ $ip ]]; then
     log "服务器公网 IP: $ip"
@@ -251,6 +237,29 @@ main() {
     echo -e "${OK} ${GreenBG} 服务域名已设置为随机二级域名 ${Font}"
   else
     echo -e "${OK} ${GreenBG} 服务域名已设置为${host} ${Font}"
+  fi
+  
+  echo -e "${OK} ${GreenBG} 正在获取 域名公网IP 信息，请耐心等待 ${Font}"
+  domain_ip=`ping ${domain} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
+  local_ip=`curl -4 ip.sb`
+  echo -e "域名dns解析IP：${domain_ip}"
+  echo -e "本机IP: ${local_ip}"
+  sleep 2
+  if [[ $(echo ${local_ip}|tr '.' '+'|bc) -eq $(echo ${domain_ip}|tr '.' '+'|bc) ]];then
+      echo -e "${OK} ${GreenBG} 域名dns解析IP  与 本机IP 匹配 ${Font}"
+      sleep 2
+  else
+      echo -e "${Error} ${RedBG} 域名dns解析IP 与 本机IP 不匹配 是否继续安装？（y/n）${Font}" && read install
+      case $install in
+      [yY][eE][sS]|[yY])
+          echo -e "${GreenBG} 继续安装 ${Font}" 
+          sleep 2
+          ;;
+      *)
+          echo -e "${RedBG} 安装终止 ${Font}" 
+          exit 2
+          ;;
+      esac
   fi
   
   stty iuclc && read -p "请输入服务端口（default:443）:" port
