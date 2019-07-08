@@ -15,9 +15,7 @@ Info="${Green}[信息]${Font}"
 OK="${Green}[OK]${Font}"
 Error="${Red}[错误]${Font}"
 
-v2ray_conf_dir="/etc/v2ray"
 nginx_conf_dir="/etc/nginx/conf.d"
-v2ray_conf="${v2ray_conf_dir}/config.json"
 nginx_conf="${nginx_conf_dir}/v2ray.conf"
 
 #生成伪装路径
@@ -137,6 +135,7 @@ dependency_install(){
 port_alterid_set(){
     stty erase '^H' && read -p "请输入连接端口（default:443）:" port
     [[ -z ${port} ]] && port="443"
+    echo -e "${OK} ${GreenBG} 端口:${port} ${Font}"
 }
 modify_port_UUID(){
     let PORT=$RANDOM+10000
@@ -229,11 +228,12 @@ port_exist_check(){
 }
 
 acme(){
+    mkdir ${nginx_conf_dir}/cert/${domain}/
     ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-384 --force
     if [[ $? -eq 0 ]];then
         echo -e "${OK} ${GreenBG} SSL 证书生成成功 ${Font}"
         sleep 2
-        ~/.acme.sh/acme.sh --installcert -d ${domain} --fullchainpath cert/$domain/ecc.cer --keypath cert/$domain/ecc.key --ecc
+        ~/.acme.sh/acme.sh --installcert -d ${domain} --fullchainpath ${nginx_conf_dir}/cert/${domain}/ecc.cer --keypath ${nginx_conf_dir}/cert/${domain}/ecc.key --ecc
         if [[ $? -eq 0 ]];then
         echo -e "${OK} ${GreenBG} 证书配置成功 ${Font}"
         sleep 2
@@ -246,75 +246,9 @@ acme(){
 nginx_conf_add(){
     touch ${nginx_conf_dir}/jsproxy.conf
     cat>${nginx_conf_dir}/jsproxy.conf<<EOF
-    http {
-      include                 log.conf;
-      server {
-        listen                443;
-        ssl on;
-        ssl_certificate       cert/$1/ecc.cer;
-        ssl_certificate_key   cert/$1/ecc.key;
-        server_name           $1;
-        include               api.conf;
-        include               www.conf;
-      }
-      server {
-        listen 80;
-        server_name serveraddr.com;
-        return 301 https://$1\$request_uri;
-      }
-      include                 acme.conf;
-
-      # https://nginx.org/en/docs/http/ngx_http_core_module.html
-      resolver                1.1.1.1 ipv6=off;
-      resolver_timeout        10s;
-
-      keepalive_timeout       60;
-      keepalive_requests      2048;
-      server_tokens           off;
-      underscores_in_headers  on;
-
-      # https://nginx.org/en/docs/http/ngx_http_ssl_module.html
-      ssl_protocols           TLSv1.2 TLSv1.3;
-      ssl_ciphers             TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-256-GCM-SHA384:TLS13-AES-128-GCM-SHA256:EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
-      ssl_session_cache       shared:SSL:30m;
-      ssl_session_timeout     1d;
-      ssl_prefer_server_ciphers on;
-
-      # https://nginx.org/en/docs/http/ngx_http_limit_req_module.html
-      limit_req_log_level     warn;
-      limit_req_zone          $binary_remote_addr zone=reqip:16m rate=100r/s;
-      limit_req               zone=reqip burst=200 nodelay;
-
-      access_log              logs/proxy.log log_proxy buffer=64k flush=1s;
-
-      # https://nginx.org/cn/docs/http/ngx_http_proxy_module.html
-      # 1MB = 8000key
-      proxy_cache_path        cache
-        levels=1:2
-        keys_zone=my_cache:32m
-        max_size=20g
-        inactive=6h
-        use_temp_path=off
-      ;
-      proxy_http_version      1.1;
-      proxy_ssl_server_name   on;
-
-      proxy_buffer_size       16k;
-      proxy_buffers           4 32k;
-      proxy_busy_buffers_size 64k;
-      proxy_send_timeout      10s;
-
-      lua_load_resty_core     off;
-
-      map $http_origin $_origin_id {
-        include               allowed-sites.conf;
-      }
-    }
-
-    # https://nginx.org/en/docs/ngx_core_module.html
-    events {
-      worker_connections      4096;
-    }
+    listen                $1 ssl http2;
+    ssl_certificate       ${nginx_conf_dir}/cert/${domain}/ecc.cer;
+    ssl_certificate_key   ${nginx_conf_dir}/cert/${domain}/ecc.key;
 EOF
 
 modify_nginx
@@ -344,14 +278,14 @@ acme_cron_update(){
 }
 show_information(){
     clear
-    echo -e "${OK} ${Green} jsproxy 安装成功 "
+    echo -e "${OK} ${GreenBG} jsproxy 安装成功 "
     echo -e "${Red} jsproxy 配置信息 ${Font}"
     echo -e "${Red} 地址（address）:${Font} ${domain} "
     echo -e "${Red} 端口（port）：${Font} ${port} "
 }
 
 install_bbr(){
-    bash -c "$(wget --no-check-certificate -qO- https://github.com/Aniverse/TrCtrlProToc0l/raw/master/A)"
+    wget "https://raw.githubusercontent.com/cx9208/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
 }
 
 main(){
@@ -365,7 +299,7 @@ main(){
     port_exist_check 80
     port_exist_check ${port}
     nginx_install
-    nginx_conf_add ${domain}
+    nginx_conf_add ${port}
     nginx_modify
 
     #改变证书安装位置，防止端口冲突关闭相关应用
