@@ -1,7 +1,6 @@
 
 { # this ensures the entire script is downloaded #
 
-#fonts color
 Green="\033[32m" 
 Red="\033[31m" 
 Yellow="\033[33m"
