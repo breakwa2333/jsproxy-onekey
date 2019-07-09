@@ -38,7 +38,8 @@ COLOR_GREEN="\033[32m"
 COLOR_YELLOW="\033[33m"
 
 main() {
-    echo $(cd `dirname $0` && pwd)
+    echo -e "AAAA"
+    echo -e "$(cd `dirname $0` && pwd)"
 }
 
 } # this ensures the entire script is downloaded #
