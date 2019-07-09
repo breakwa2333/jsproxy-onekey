@@ -77,7 +77,7 @@ gen_cert() {
 
   local acme=~/.acme.sh/acme.sh
 
-  if [[ ${1} == "random" ]]; then
+  if [[ ${1} == "0" ]]; then
     for i in ${DOMAIN_SUFFIX[@]}; do
       local domain=$ip.$i
       log "尝试为域名 $domain 申请证书 ..."
@@ -241,11 +241,9 @@ adjust_host(){
     -p tcp --dport 80 \
     -j REDIRECT \
     --to-ports 10080
-  if [[ ${mode} == "m"]]; then
-    stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
-    [[ -z ${host} ]] && host="random"
-  fi
-  if [[ ${host} == "random" ]]; then
+  stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
+  if [[ -z ${host} ]]; then
+    host="0"
     echo -e "${OK} ${GreenBG} 服务域名已设置为随机二级域名 ${Font}"
   else
     echo -e "${OK} ${GreenBG} 服务域名已设置为${host} ${Font}"
@@ -275,10 +273,8 @@ adjust_host(){
 }
 
 adjust_port(){
-  if [[ ${mode} == "m"]]; then
-    stty iuclc && read -p "请输入服务端口（default:443）:" port
-    [[ -z ${port} ]] && port="443"
-  fi
+  stty iuclc && read -p "请输入服务端口（default:443）:" port
+  [[ -z ${port} ]] && port="443"
   iptables -t nat -A PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports 8443
   iptables-save > /etc/iptables/rules.v4
   echo -e "${OK} ${GreenBG} 服务端口已设置为${port} ${Font}"
@@ -315,8 +311,7 @@ final_step(){
   log "安装完成。后续维护参考 https://github.com/EtherDream/jsproxy"
 }
 
-manual(){
-  mode="m"
+main(){
   check_system_root
   install_dependency
   create_user_jsproxy
@@ -327,29 +322,14 @@ manual(){
   final_step
 }
 
-auto(){
-  mode="a"
-  host=${1}
-  port=${2}
-  check_system_root
-  install_dependency
-  create_user_jsproxy
-  adjust_host
-  adjust_port
-  auto_start
-  run_in_jsproxy
-  final_step
-}
 
 case $1 in
 "install")
   install ${2} ${3};;
 "cert")
   gen_cert ${2} ${3};;
-"auto")
-  auto ${2} ${3};;
 *)
-  manual;;
+  main;;
 esac
 
 } # this ensures the entire script is downloaded #
