@@ -269,6 +269,7 @@ main() {
   [[ -z ${port} ]] && port="443"
   iptables -t nat -A PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports 8443
   echo -e "${OK} ${GreenBG} 服务端口已设置为${port} ${Font}"
+  echo "${port}" > $(cd `dirname $0` && pwd)/jsproxy_port.txt
   
   echo -e "${OK} ${GreenBG} 正在配置自启动服务 ${Font}"
   wget $SRC_URL/jsproxy_reboot.sh
