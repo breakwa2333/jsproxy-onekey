@@ -284,7 +284,7 @@ ExecStart=$(bash location.sh)/jsproxy_reboot.sh
 [Install]
 WantedBy=default.target
       " > /etc/systemd/system/jsproxy.service
-  chmod +x $(bash location.sh)jsproxy_reboot.sh
+  chmod +x $(bash location.sh)/jsproxy_reboot.sh
   systemctl daemon-reload
   systemctl enable jsproxy.service
   echo -e "${OK} ${GreenBG} 自启动服务配置完成 ${Font}"
