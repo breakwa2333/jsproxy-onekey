@@ -218,7 +218,10 @@ main() {
     err "自动安装需要 root 权限。如果无法使用 root，尝试编译安装"
     exit 1
   fi
-
+  
+  apt-get update
+  apt-get install iptables-persistent -y
+  
   if ! id -u jsproxy > /dev/null 2>&1 ; then
     log "创建用户 jsproxy ..."
     groupadd nobody > /dev/null 2>&1
@@ -268,7 +271,7 @@ main() {
   stty iuclc && read -p "请输入服务端口（default:443）:" port
   [[ -z ${port} ]] && port="443"
   iptables -t nat -A PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports 8443
-  service iptables save
+  iptables-save > /etc/iptables/rules.v4
   echo -e "${OK} ${GreenBG} 服务端口已设置为${port} ${Font}"
   wget $SRC_URL/location.sh
   echo "${port}" > $(bash location.sh)/jsproxy_port.txt
