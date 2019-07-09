@@ -21,7 +21,7 @@ COLOR_GREEN="\033[32m"
 COLOR_YELLOW="\033[33m"
 
 main(){
-  iptables -t nat -A PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports 8443
+  iptables -t nat -A PREROUTING -p tcp --dport $(cat jsproxy_port.txt | sed  -n "1p") -j REDIRECT --to-ports 8443
   su jsproxy -c "bash /home/jsproxy/server/run.sh" 
 }
 
