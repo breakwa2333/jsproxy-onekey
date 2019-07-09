@@ -241,11 +241,9 @@ adjust_host(){
     -p tcp --dport 80 \
     -j REDIRECT \
     --to-ports 10080
-  if [[ $1 == "m"]]; then
+  if [[ ${mode} == "m"]]; then
     stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
     [[ -z ${host} ]] && host="random"
-  else
-    host=${2}
   fi
   if [[ ${host} == "random" ]]; then
     echo -e "${OK} ${GreenBG} 服务域名已设置为随机二级域名 ${Font}"
@@ -277,11 +275,9 @@ adjust_host(){
 }
 
 adjust_port(){
-  if [[ ${1} == "m"]]; then
+  if [[ ${mode} == "m"]]; then
     stty iuclc && read -p "请输入服务端口（default:443）:" port
     [[ -z ${port} ]] && port="443"
-  else
-    port=${2}
   fi
   iptables -t nat -A PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports 8443
   iptables-save > /etc/iptables/rules.v4
@@ -320,22 +316,26 @@ final_step(){
 }
 
 manual(){
+  mode="m"
   check_system_root
   install_dependency
   create_user_jsproxy
-  adjust_host m
-  adjust_port m
+  adjust_host
+  adjust_port
   auto_start
   run_in_jsproxy
   final_step
 }
 
 auto(){
+  mode="a"
+  host=${1}
+  port=${2}
   check_system_root
   install_dependency
   create_user_jsproxy
-  adjust_host a ${1}
-  adjust_port a ${2}
+  adjust_host
+  adjust_port
   auto_start
   run_in_jsproxy
   final_step
@@ -346,7 +346,7 @@ case $1 in
   install ${2} ${3};;
 "cert")
   gen_cert ${2} ${3};;
-"-auto")
+"auto")
   auto ${2} ${3};;
 *)
   manual;;
