@@ -13,9 +13,10 @@ OK="${Green}[OK]${Font}"
 Error="${Red}[错误]${Font}"
 
 JSPROXY_VER=master
+ONEKEY_VER=experimental
 OPENRESTY_VER=1.15.8.1
 
-SRC_URL=https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/$JSPROXY_VER
+SRC_URL=https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/$ONEKEY_VER
 BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master
 ZIP_URL=https://codeload.github.com/EtherDream/jsproxy/tar.gz
 
