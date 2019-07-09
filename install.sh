@@ -279,12 +279,11 @@ main() {
 After=network.target
       
 [Service]
-ExecStart=$(bash location.sh)/jsproxy_reboot.sh
+ExecStart=sudo $(bash location.sh)/jsproxy_reboot.sh
       
 [Install]
 WantedBy=default.target
       " > /etc/systemd/system/jsproxy.service
-  chown root.root $(bash location.sh)/jsproxy_reboot.sh
   chmod +x $(bash location.sh)/jsproxy_reboot.sh
   systemctl daemon-reload
   systemctl enable jsproxy.service
