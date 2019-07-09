@@ -279,7 +279,7 @@ main() {
 After=network.target
       
 [Service]
-ExecStart=sudo $(bash location.sh)/jsproxy_reboot.sh
+ExecStart=$(bash location.sh)/jsproxy_reboot.sh
       
 [Install]
 WantedBy=default.target
