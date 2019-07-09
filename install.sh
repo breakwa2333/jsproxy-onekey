@@ -268,6 +268,7 @@ main() {
   stty iuclc && read -p "请输入服务端口（default:443）:" port
   [[ -z ${port} ]] && port="443"
   iptables -t nat -A PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports 8443
+  service iptables save
   echo -e "${OK} ${GreenBG} 服务端口已设置为${port} ${Font}"
   wget $SRC_URL/location.sh
   echo "${port}" > $(bash location.sh)/jsproxy_port.txt
@@ -279,8 +280,6 @@ main() {
 After=network.target
       
 [Service]
-User=root
-Group=root
 ExecStart=$(bash location.sh)/jsproxy_reboot.sh
       
 [Install]
