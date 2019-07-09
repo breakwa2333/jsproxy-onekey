@@ -241,7 +241,7 @@ adjust_host(){
     -p tcp --dport 80 \
     -j REDIRECT \
     --to-ports 10080
-  if [[ ${1} == "m"]]; then
+  if [[ ${1} == "m" ]]; then
     stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
     [[ -z ${host} ]] && host="random"
   else
@@ -277,7 +277,7 @@ adjust_host(){
 }
 
 adjust_port(){
-  if [[ ${1} == "m"]]; then
+  if [[ ${1} == "m" ]]; then
     stty iuclc && read -p "请输入服务端口（default:443）:" port
     [[ -z ${port} ]] && port="443"
   else
@@ -346,7 +346,7 @@ case $1 in
   install ${2} ${3};;
 "cert")
   gen_cert ${2} ${3};;
-"-auto")
+"auto")
   auto ${2} ${3};;
 *)
   manual;;
