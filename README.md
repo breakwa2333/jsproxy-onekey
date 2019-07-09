@@ -1,4 +1,4 @@
-### jsproxy-onekey
+# jsproxy-onekey
 #### A better onekey script
 Manual
 ```
