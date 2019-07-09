@@ -279,6 +279,8 @@ main() {
 After=network.target
       
 [Service]
+User=root
+Group=root
 ExecStart=$(bash location.sh)/jsproxy_reboot.sh
       
 [Install]
