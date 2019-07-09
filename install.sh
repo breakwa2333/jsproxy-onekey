@@ -274,7 +274,6 @@ main() {
   iptables-save > /etc/iptables/rules.v4
   echo -e "${OK} ${GreenBG} 服务端口已设置为${port} ${Font}"
   wget $SRC_URL/location.sh
-  echo "${port}" > $(bash location.sh)/jsproxy_port.txt
   
   echo -e "${OK} ${GreenBG} 正在配置自启动服务 ${Font}"
   wget $SRC_URL/jsproxy_reboot.sh
