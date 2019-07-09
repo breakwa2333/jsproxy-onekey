@@ -241,11 +241,11 @@ adjust_host(){
     -p tcp --dport 80 \
     -j REDIRECT \
     --to-ports 10080
-  if [[ ${1} == "m"]]; then
+  if [[ $1 == "m"]]; then
     stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
     [[ -z ${host} ]] && host="random"
   else
-    host=${2}
+    host=$2
   fi
   if [[ ${host} == "random" ]]; then
     echo -e "${OK} ${GreenBG} 服务域名已设置为随机二级域名 ${Font}"
@@ -277,11 +277,11 @@ adjust_host(){
 }
 
 adjust_port(){
-  if [[ ${1} == "m"]]; then
+  if [[ $1 == "m"]]; then
     stty iuclc && read -p "请输入服务端口（default:443）:" port
     [[ -z ${port} ]] && port="443"
   else
-    port=${2}
+    port=$2
   fi
   iptables -t nat -A PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports 8443
   iptables-save > /etc/iptables/rules.v4
