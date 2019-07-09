@@ -1,5 +1,5 @@
 # jsproxy-onekey
 A better onekey script
 ```
-curl -L https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/install.sh | bash
+curl -L https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/experimental/install.sh | bash
 ```
