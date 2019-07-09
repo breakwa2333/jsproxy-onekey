@@ -302,7 +302,7 @@ WantedBy=default.target
 
 run_in_jsproxy(){
   log "切换到 jsproxy 用户，执行安装脚本 ..."
-  su jsproxy -c "curl -L -s dos2unix $SRC_URL/install.sh | bash -s install ${host} ${port}"
+  su jsproxy -c "curl -L $SRC_URL/install.sh | bash -s install ${host} ${port}"
 }
 
 final_step(){
