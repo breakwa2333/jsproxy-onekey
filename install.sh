@@ -242,7 +242,7 @@ adjust_host(){
     -j REDIRECT \
     --to-ports 10080
   if [[ ${1} == "m" ]]; then
-  stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
+    stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
     [[ -z ${host} ]] && host="random"
   else
     host=${2}
