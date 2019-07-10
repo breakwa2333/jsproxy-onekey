@@ -227,7 +227,12 @@ create_user_jsproxy(){
 }
 
 install_dependency(){
+  echo -e "${OK} ${GreenBG} 正在更新包列表 ${Font}"
   apt-get update
+  echo -e "${OK} ${GreenBG} 正在安装iptables-persistent ${Font}"
+  echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" >> iptables-persistent.conf
+  echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" >> iptables-persistent.conf
+  cat iptables-persistent.conf | debconf-set-selections
   apt-get install iptables-persistent -y
 }
 
@@ -242,6 +247,7 @@ adjust_host(){
     -j REDIRECT \
     --to-ports 10080
   if [[ ${1} == "m" ]]; then
+    #手动设置HOST
     stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
     [[ -z ${host} ]] && host="random"
   else
@@ -261,6 +267,7 @@ adjust_host(){
       echo -e "${OK} ${GreenBG} 域名dns解析IP  与 本机IP 匹配 ${Font}"
       sleep 2
     else
+      #手动选择是否继续
       echo -e "${Error} ${RedBG} 域名dns解析IP 与 本机IP 不匹配 是否继续安装？（y/n）${Font}" && read still
       case $still in
       [yY][eE][sS]|[yY])
@@ -278,6 +285,7 @@ adjust_host(){
 
 adjust_port(){
   if [[ ${1} == "m" ]]; then
+    #手动设置PORT
     stty iuclc && read -p "请输入服务端口（default:443）:" port
     [[ -z ${port} ]] && port="443"
   else
