@@ -1,13 +1,13 @@
 # jsproxy-onekey
-Manual Mode
+### Manual Mode
 ```
 bash <(curl -L https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/install.sh)
 ```
-Automatic Mode
+### Automatic Mode
 ```
 curl -L https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/install.sh | bash -s auto <host> <port>
 ```
-Automatic Mode Examples  
+### Automatic Mode Examples  
 Example(1)  
 Input:  
 ```
