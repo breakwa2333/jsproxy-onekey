@@ -14,7 +14,7 @@ Error="${Red}[错误]${Font}"
 
 JSPROXY_VER=master
 OPENRESTY_VER=1.15.8.1
-ONEKEY_VER=experimental
+ONEKEY_VER=master
 
 SRC_URL=https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/$ONEKEY_VER
 BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master
