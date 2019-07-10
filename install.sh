@@ -248,7 +248,7 @@ adjust_host(){
     --to-ports 10080
   if [[ ${1} == "m" ]]; then
     #手动设置HOST
-    read -p "请输入域名（default:随机二级域名）:" host
+    stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
     [[ -z ${host} ]] && host="random"
   else
     host=${2}
@@ -286,7 +286,7 @@ adjust_host(){
 adjust_port(){
   if [[ ${1} == "m" ]]; then
     #手动设置PORT
-    read -p "请输入服务端口（default:443）:" port
+    stty iuclc && read -p "请输入服务端口（default:443）:" port
     [[ -z ${port} ]] && port="443"
   else
     port=${2}
