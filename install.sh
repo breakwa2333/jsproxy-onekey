@@ -55,7 +55,7 @@ err() {
 }
 
 gen_cert() {
-  echo -e "${OK} ${GreenBG}选项::$1::{Font}"
+  log "HOST:$1,PORT:$2"
   local ip=`curl -4 ip.sb`
 
   if [[ ! $ip ]]; then
@@ -318,7 +318,7 @@ WantedBy=default.target
 
 run_in_jsproxy(){
   log "切换到 jsproxy 用户，执行安装脚本 ..."
-  echo -e "${OK} ${GreenBG}域名::$host::端口::$port::{Font}"
+  echo -e "${OK} ${GreenBG}域名::$host::端口::$port::${Font}"
   su jsproxy -c "curl -L $SRC_URL/install.sh | bash -s install ${host} ${port}"
 }
 
