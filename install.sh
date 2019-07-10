@@ -19,6 +19,7 @@ ONEKEY_VER=experimental
 SRC_URL=https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/$ONEKEY_VER
 BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master
 ZIP_URL=https://codeload.github.com/EtherDream/jsproxy/tar.gz
+IPTABLE_URL=https://raw.githubusercontent.com/EtherDream/jsproxy/$JSPROXY_VER/setup-ipset.sh
 
 SUPPORTED_OS="Linux-x86_64"
 OS="$(uname)-$(uname -m)"
@@ -324,6 +325,11 @@ WantedBy=default.target
   echo -e "${OK} ${GreenBG} 自启动服务配置完成 ${Font}"
 }
 
+set_iptable(){
+  curl -L $IPTABLE_URL | bash
+  iptables-save > /etc/iptables/rules.v4
+}
+
 run_in_jsproxy(){
   log "切换到 jsproxy 用户，执行安装脚本 ..."
   su jsproxy -c "curl -L $SRC_URL/install.sh | bash -s install ${host} ${port}"
@@ -342,6 +348,7 @@ manual(){
   adjust_host m
   adjust_port m
   auto_start
+  set_iptable
   run_in_jsproxy
   final_step
 }
@@ -353,6 +360,7 @@ auto(){
   adjust_host a ${1}
   adjust_port a ${2}
   auto_start
+  set_iptable
   run_in_jsproxy
   final_step
 }
