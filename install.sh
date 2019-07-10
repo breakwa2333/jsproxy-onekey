@@ -83,6 +83,7 @@ gen_cert() {
       echo -e "${OK} ${GreenBG} 正在获取 域名:${domain}公网IP信息，请耐心等待 ${Font}"
       local domain_ip=`ping ${domain} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
       local local_ip=`curl -4 ip.sb`
+      [[ -z ${domain_ip} ]] && domain_ip="N/A"
       echo -e "域名dns解析IP：${domain_ip}"
       echo -e "本机IP: ${local_ip}"
       if [[ $(echo ${local_ip}|tr '.' '+'|bc) -eq $(echo ${domain_ip}|tr '.' '+'|bc) ]];then
@@ -272,6 +273,7 @@ adjust_host(){
     echo -e "${OK} ${GreenBG} 正在获取 域名:${host}公网IP信息，请耐心等待 ${Font}"
     domain_ip=`ping ${host} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
     local_ip=`curl -4 ip.sb`
+    [[ -z ${domain_ip} ]] && domain_ip="N/A"
     echo -e "域名dns解析IP：${domain_ip}"
     echo -e "本机IP: ${local_ip}"
     if [[ $(echo ${local_ip}|tr '.' '+'|bc) -eq $(echo ${domain_ip}|tr '.' '+'|bc) ]];then
