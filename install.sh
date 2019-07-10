@@ -298,6 +298,7 @@ adjust_port(){
       echo -e "${Error} ${RedBG} 端口范围非法, 需在1~65535之间${Font}"
       echo -e "${RedBG} 安装终止 ${Font}"
       exit 2
+  fi
   iptables -t nat -A PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports 8443
   iptables-save > /etc/iptables/rules.v4
   echo -e "${OK} ${GreenBG} 服务端口已设置为${port} ${Font}"
