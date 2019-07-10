@@ -7,8 +7,9 @@ bash <(curl -L https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/mast
 ```
 curl -L https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/install.sh | bash -s auto <host> <port>
 ```
-### Automatic Mode Examples  
-Example(1)  
+### Automatic Mode Examples 
+——————————————————————————————————————————————————————  
+#### Example(1)  
 Input:  
 ```
 curl -L https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/install.sh | bash -s auto example.com 443
@@ -18,7 +19,7 @@ Waiting for installing...
 Installing finished...  
 Now you can access https://example.com and enjoy.  
 ——————————————————————————————————————————————————————  
-Example(2)  
+#### Example(2)  
 Input:  
 ```
 curl -L https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/install.sh | bash -s auto random 443
@@ -28,7 +29,7 @@ Waiting for installing...
 Installing finished...  
 Now you can access https://YourIP.Wildcard.DNS and enjoy.  
 ——————————————————————————————————————————————————————  
-Example(3)  
+#### Example(3)  
 Input:  
 ```
 curl -L https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/install.sh | bash -s auto example.com 65536
@@ -37,3 +38,4 @@ Result:
 Waiting for installing...  
 Error! Illigal Port!  
 Now you can just modify parameters and run the script again.   
+——————————————————————————————————————————————————————  
