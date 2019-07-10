@@ -17,7 +17,7 @@ Result:
 Waiting for installing...  
 Installing finished...  
 Now you can access https://example.com and enjoy.  
-———————————————————————————————————————————————————————————————————  
+———————————————————————————————————————————————————————  
 Example(2)  
 Input:  
 ```
@@ -27,7 +27,7 @@ Result:
 Waiting for installing...  
 Installing finished...  
 Now you can access https://<Your IP>.Wildcard.DNS and enjoy.  
-———————————————————————————————————————————————————————————————————  
+———————————————————————————————————————————————————————  
 Example(3)  
 Input:  
 ```
