@@ -294,7 +294,7 @@ adjust_port(){
   else
     port=${2}
   fi
-  if [[ "${port}" -gt "65535" | "${port}" -lt "1" ]]; then
+  if [[ "${port}" -gt "65535" || "${port}" -lt "1" ]]; then
       echo -e "${Error} ${RedBG} 端口范围非法, 需在1~65535之间${Font}"
       echo -e "${RedBG} 安装终止 ${Font}"
       exit 2
