@@ -263,23 +263,13 @@ adjust_host(){
     local_ip=`curl -4 ip.sb`
     echo -e "域名dns解析IP：${domain_ip}"
     echo -e "本机IP: ${local_ip}"
-    sleep 2
     if [[ $(echo ${local_ip}|tr '.' '+'|bc) -eq $(echo ${domain_ip}|tr '.' '+'|bc) ]];then
       echo -e "${OK} ${GreenBG} 域名dns解析IP  与 本机IP 匹配 ${Font}"
-      sleep 2
     else
       #手动选择是否继续
-      echo -e "${Error} ${RedBG} 域名dns解析IP 与 本机IP 不匹配 是否继续安装？（y/n）${Font}" && read still
-      case $still in
-      [yY][eE][sS]|[yY])
-          echo -e "${GreenBG} 继续安装 ${Font}" 
-          sleep 2
-          ;;
-      *)
-          echo -e "${RedBG} 安装终止 ${Font}" 
-          exit 2
-          ;;
-      esac
+      echo -e "${Error} ${RedBG} 域名dns解析IP 与 本机IP 不匹配${Font}"
+      echo -e "${RedBG} 安装终止 ${Font}"
+      exit 2
     fi
   fi
 }
