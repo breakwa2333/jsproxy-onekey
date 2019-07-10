@@ -26,6 +26,9 @@ USER=$(whoami)
 INSTALL_DIR=/home/jsproxy
 NGX_DIR=$INSTALL_DIR/openresty
 
+host=""
+port=""
+
 DOMAIN_SUFFIX=(
   xip.io
   nip.io
