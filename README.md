@@ -26,7 +26,7 @@ curl -L https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/master/inst
 Result:  
 Waiting for installing...  
 Installing finished...  
-Now you can access https://<Your IP>.Wildcard.DNS and enjoy.  
+Now you can access https://YourIP.Wildcard.DNS and enjoy.  
 ——————————————————————————————————————————————————————  
 Example(3)  
 Input:  
