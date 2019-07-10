@@ -76,7 +76,7 @@ gen_cert() {
   curl https://raw.githubusercontent.com/Neilpang/acme.sh/master/acme.sh | INSTALLONLINE=1  sh
 
   local acme=~/.acme.sh/acme.sh
-  echo -e "${OK} ${GreenBG}选项$1"
+  echo -e "${OK} ${GreenBG} 选项$1 ${Font}"
   if [[ ${1} == "random" ]]; then
     for i in ${DOMAIN_SUFFIX[@]}; do
       local domain=$ip.$i
