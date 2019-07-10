@@ -26,9 +26,6 @@ USER=$(whoami)
 INSTALL_DIR=/home/jsproxy
 NGX_DIR=$INSTALL_DIR/openresty
 
-host=""
-port=""
-
 DOMAIN_SUFFIX=(
   xip.io
   nip.io
@@ -58,6 +55,7 @@ err() {
 }
 
 gen_cert() {
+  echo -e "${OK} ${GreenBG}选项::$1$::{Font}"
   local ip=`curl -4 ip.sb`
 
   if [[ ! $ip ]]; then
@@ -120,7 +118,6 @@ gen_cert() {
       rm -rf $dist
     done
   else
-      echo -e "${OK} ${GreenBG}选项::$1$::{Font}"
       local dist=server/cert/$1
       mkdir -p $dist
       
