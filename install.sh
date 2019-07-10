@@ -14,8 +14,9 @@ Error="${Red}[错误]${Font}"
 
 JSPROXY_VER=master
 OPENRESTY_VER=1.15.8.1
+ONEKEY_VER=master
 
-SRC_URL=https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/$JSPROXY_VER
+SRC_URL=https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/$ONEKEY_VER
 BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master
 ZIP_URL=https://codeload.github.com/EtherDream/jsproxy/tar.gz
 
@@ -76,10 +77,22 @@ gen_cert() {
   curl https://raw.githubusercontent.com/Neilpang/acme.sh/master/acme.sh | INSTALLONLINE=1  sh
 
   local acme=~/.acme.sh/acme.sh
-
-  if [[ ${1} == "0" ]]; then
+  if [[ ${1} == "random" ]]; then
     for i in ${DOMAIN_SUFFIX[@]}; do
       local domain=$ip.$i
+      echo -e "${OK} ${GreenBG} 正在获取 域名:${domain}公网IP信息，请耐心等待 ${Font}"
+      local domain_ip=`ping ${domain} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
+      local local_ip=`curl -4 ip.sb`
+      [[ -z ${domain_ip} ]] && domain_ip="N/A"
+      echo -e "域名dns解析IP：${domain_ip}"
+      echo -e "本机IP: ${local_ip}"
+      if [[ $(echo ${local_ip}|tr '.' '+'|bc) -eq $(echo ${domain_ip}|tr '.' '+'|bc) ]];then
+        echo -e "${OK} ${GreenBG} 域名dns解析IP  与 本机IP 匹配 ${Font}"
+      else
+        echo -e "${Error} ${RedBG} 域名dns解析IP 与 本机IP 不匹配${Font}"
+        echo -e "${RedBG} 安装终止 ${Font}"
+        exit 2
+      fi
       log "尝试为域名 $domain 申请证书 ..."
 
       local dist=server/cert/$domain
@@ -227,7 +240,12 @@ create_user_jsproxy(){
 }
 
 install_dependency(){
+  echo -e "${OK} ${GreenBG} 正在更新包列表 ${Font}"
   apt-get update
+  echo -e "${OK} ${GreenBG} 正在安装iptables-persistent ${Font}"
+  echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" >> iptables-persistent.conf
+  echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" >> iptables-persistent.conf
+  cat iptables-persistent.conf | debconf-set-selections
   apt-get install iptables-persistent -y
 }
 
@@ -241,40 +259,46 @@ adjust_host(){
     -p tcp --dport 80 \
     -j REDIRECT \
     --to-ports 10080
-  stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
-  if [[ -z ${host} ]]; then
-    host="0"
+  if [[ ${1} == "m" ]]; then
+    #手动设置HOST
+    stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
+    [[ -z ${host} ]] && host="random"
+  else
+    host=${2}
+  fi
+  if [[ ${host} == "random" ]]; then
     echo -e "${OK} ${GreenBG} 服务域名已设置为随机二级域名 ${Font}"
   else
     echo -e "${OK} ${GreenBG} 服务域名已设置为${host} ${Font}"
-    echo -e "${OK} ${GreenBG} 正在获取 域名公网IP 信息，请耐心等待 ${Font}"
+    echo -e "${OK} ${GreenBG} 正在获取 域名:${host}公网IP信息，请耐心等待 ${Font}"
     domain_ip=`ping ${host} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
     local_ip=`curl -4 ip.sb`
+    [[ -z ${domain_ip} ]] && domain_ip="N/A"
     echo -e "域名dns解析IP：${domain_ip}"
     echo -e "本机IP: ${local_ip}"
-    sleep 2
     if [[ $(echo ${local_ip}|tr '.' '+'|bc) -eq $(echo ${domain_ip}|tr '.' '+'|bc) ]];then
       echo -e "${OK} ${GreenBG} 域名dns解析IP  与 本机IP 匹配 ${Font}"
-      sleep 2
     else
-      echo -e "${Error} ${RedBG} 域名dns解析IP 与 本机IP 不匹配 是否继续安装？（y/n）${Font}" && read still
-      case $still in
-      [yY][eE][sS]|[yY])
-          echo -e "${GreenBG} 继续安装 ${Font}" 
-          sleep 2
-          ;;
-      *)
-          echo -e "${RedBG} 安装终止 ${Font}" 
-          exit 2
-          ;;
-      esac
+      echo -e "${Error} ${RedBG} 域名dns解析IP 与 本机IP 不匹配${Font}"
+      echo -e "${RedBG} 安装终止 ${Font}"
+      exit 2
     fi
   fi
 }
 
 adjust_port(){
-  stty iuclc && read -p "请输入服务端口（default:443）:" port
-  [[ -z ${port} ]] && port="443"
+  if [[ ${1} == "m" ]]; then
+    #手动设置PORT
+    stty iuclc && read -p "请输入服务端口（default:443）:" port
+    [[ -z ${port} ]] && port="443"
+  else
+    port=${2}
+  fi
+  if [[ "${port}" -gt "65535" || "${port}" -lt "1" ]]; then
+      echo -e "${Error} ${RedBG} 端口范围非法, 需在1~65535之间${Font}"
+      echo -e "${RedBG} 安装终止 ${Font}"
+      exit 2
+  fi
   iptables -t nat -A PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports 8443
   iptables-save > /etc/iptables/rules.v4
   echo -e "${OK} ${GreenBG} 服务端口已设置为${port} ${Font}"
@@ -311,25 +335,37 @@ final_step(){
   log "安装完成。后续维护参考 https://github.com/EtherDream/jsproxy"
 }
 
-main(){
+manual(){
   check_system_root
   install_dependency
   create_user_jsproxy
-  adjust_host
-  adjust_port
+  adjust_host m
+  adjust_port m
   auto_start
   run_in_jsproxy
   final_step
 }
 
+auto(){
+  check_system_root
+  install_dependency
+  create_user_jsproxy
+  adjust_host a ${1}
+  adjust_port a ${2}
+  auto_start
+  run_in_jsproxy
+  final_step
+}
 
 case $1 in
 "install")
   install ${2} ${3};;
 "cert")
   gen_cert ${2} ${3};;
+"auto")
+  auto ${2} ${3};;
 *)
-  main;;
+  manual;;
 esac
 
 } # this ensures the entire script is downloaded #
