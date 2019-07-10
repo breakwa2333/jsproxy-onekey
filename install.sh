@@ -56,7 +56,6 @@ err() {
 }
 
 gen_cert() {
-  log "HOST:$1,PORT:$2"
   local ip=`curl -4 ip.sb`
 
   if [[ ! $ip ]]; then
@@ -81,6 +80,18 @@ gen_cert() {
   if [[ ${1} == "random" ]]; then
     for i in ${DOMAIN_SUFFIX[@]}; do
       local domain=$ip.$i
+      echo -e "${OK} ${GreenBG} 正在获取 域名:${domain}公网IP信息，请耐心等待 ${Font}"
+      local domain_ip=`ping ${domain} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
+      local local_ip=`curl -4 ip.sb`
+      echo -e "域名dns解析IP：${domain_ip}"
+      echo -e "本机IP: ${local_ip}"
+      if [[ $(echo ${local_ip}|tr '.' '+'|bc) -eq $(echo ${domain_ip}|tr '.' '+'|bc) ]];then
+        echo -e "${OK} ${GreenBG} 域名dns解析IP  与 本机IP 匹配 ${Font}"
+      else
+        echo -e "${Error} ${RedBG} 域名dns解析IP 与 本机IP 不匹配${Font}"
+        echo -e "${RedBG} 安装终止 ${Font}"
+        exit 2
+      fi
       log "尝试为域名 $domain 申请证书 ..."
 
       local dist=server/cert/$domain
@@ -258,7 +269,7 @@ adjust_host(){
     echo -e "${OK} ${GreenBG} 服务域名已设置为随机二级域名 ${Font}"
   else
     echo -e "${OK} ${GreenBG} 服务域名已设置为${host} ${Font}"
-    echo -e "${OK} ${GreenBG} 正在获取 域名公网IP 信息，请耐心等待 ${Font}"
+    echo -e "${OK} ${GreenBG} 正在获取 域名:${host}公网IP信息，请耐心等待 ${Font}"
     domain_ip=`ping ${host} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
     local_ip=`curl -4 ip.sb`
     echo -e "域名dns解析IP：${domain_ip}"
@@ -308,7 +319,6 @@ WantedBy=default.target
 
 run_in_jsproxy(){
   log "切换到 jsproxy 用户，执行安装脚本 ..."
-  echo -e "${OK} ${GreenBG}域名::$host::端口::$port::${Font}"
   su jsproxy -c "curl -L $SRC_URL/install.sh | bash -s install ${host} ${port}"
 }
 
