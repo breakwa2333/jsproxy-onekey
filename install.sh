@@ -314,14 +314,15 @@ auto_start(){
 After=network.target
       
 [Service]
-User=jsproxy
 Type=forking
-ExecStart=/home/jsproxy/server/run.sh
-ExecStop=/home/jsproxy/server/run.sh -s quit
-ExecReload=/home/jsproxy/server/run.sh -s reload
+User=jsproxy
+PIDFile=/run/nginx.pid
+ExecStart=/home/jsproxy/openresty/nginx/sbin/nginx -c /home/jsproxy/server/nginx.conf -p /home/jsproxy/server/nginx
+ExecStop=/home/jsproxy/openresty/nginx/sbin/nginx -c /home/jsproxy/server/nginx.conf -p /home/jsproxy/server/nginx -s quit
+ExecReload=/home/jsproxy/openresty/nginx/sbin/nginx -c /home/jsproxy/server/nginx.conf -p /home/jsproxy/server/nginx -s reload
       
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
       " > /etc/systemd/system/jsproxy.service
   systemctl daemon-reload
   systemctl enable jsproxy.service
