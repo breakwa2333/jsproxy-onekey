@@ -331,7 +331,6 @@ WantedBy=default.target
 
 set_iptable(){
   curl -L $IPTABLE_URL | bash
-  iptables-save > /etc/iptables/rules.v4
 }
 
 run_in_jsproxy(){
