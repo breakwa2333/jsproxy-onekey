@@ -251,14 +251,13 @@ install_dependency(){
 
 adjust_host(){
   warn "HTTPS 证书申请需要验证 80 端口，确保 TCP:80 已添加到防火墙"
-  warn "如果当前已有 80 端口的服务，将暂时无法收到数据"
   iptables \
     -m comment --comment "acme challenge svc" \
     -t nat \
     -I PREROUTING 1 \
     -p tcp --dport 80 \
     -j REDIRECT \
-    --to-ports 10080
+    --to-ports 8080
   if [[ ${1} == "m" ]]; then
     #手动设置HOST
     stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
