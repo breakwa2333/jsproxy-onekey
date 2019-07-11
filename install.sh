@@ -248,6 +248,7 @@ install_dependency(){
   echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" >> iptables-persistent.conf
   cat iptables-persistent.conf | debconf-set-selections
   apt-get install iptables-persistent -y
+  echo -e "${OK} ${GreenBG} 正在安装ipset ${Font}"
   apt-get install ipset -y
 }
 
@@ -351,7 +352,6 @@ manual(){
   adjust_host m
   adjust_port m
   auto_start
-  set_iptable
   run_in_jsproxy
   final_step
 }
@@ -363,7 +363,6 @@ auto(){
   adjust_host a ${1}
   adjust_port a ${2}
   auto_start
-  set_iptable
   run_in_jsproxy
   final_step
 }
