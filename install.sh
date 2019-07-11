@@ -316,10 +316,10 @@ After=network.target
       
 [Service]
 User=jsproxy
-Group=jsproxy
-ExecStart=/home/jsproxy/openresty/nginx/sbin/nginx -c /home/jsproxy/server/nginx.conf -p /home/jsproxy/server/nginx
-ExecStop=/home/jsproxy/openresty/nginx/sbin/nginx -c /home/jsproxy/server/nginx.conf -p /home/jsproxy/server/nginx -s quit
-ExecReload=/home/jsproxy/openresty/nginx/sbin/nginx -c /home/jsproxy/server/nginx.conf -p /home/jsproxy/server/nginx -s reload
+Type=forking
+ExecStart=/home/jsproxy/server/run.sh
+ExecStop=/home/jsproxy/server/run.sh -s quit
+ExecReload=/home/jsproxy/server/run.sh -s reload
       
 [Install]
 WantedBy=default.target
