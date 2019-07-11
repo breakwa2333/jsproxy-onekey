@@ -248,6 +248,7 @@ install_dependency(){
   echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" >> iptables-persistent.conf
   cat iptables-persistent.conf | debconf-set-selections
   apt-get install iptables-persistent -y
+  apt-get install ipset -y
 }
 
 adjust_host(){
