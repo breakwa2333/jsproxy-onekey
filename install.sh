@@ -261,7 +261,7 @@ adjust_host(){
     -I PREROUTING 1 \
     -p tcp --dport 80 \
     -j REDIRECT \
-    --to-ports 10080
+    --to-ports 8080
   if [[ ${1} == "m" ]]; then
     #手动设置HOST
     stty iuclc && read -p "请输入域名（default:随机二级域名）:" host
@@ -353,6 +353,7 @@ manual(){
   adjust_port m
   auto_start
   run_in_jsproxy
+  set_iptable
   final_step
 }
 
@@ -364,6 +365,7 @@ auto(){
   adjust_port a ${2}
   auto_start
   run_in_jsproxy
+  set_iptable
   final_step
 }
 
