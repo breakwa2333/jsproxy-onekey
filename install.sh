@@ -191,7 +191,7 @@ install() {
 
   log "下载代理服务 ..."
   wget -o jsproxy.tar.gz $Release_URL
-  tar zxf jsproxy.tar.gz
+  tar -xzvf jsproxy.tar.gz
   rm -f jsproxy.tar.gz
 
   log "下载静态资源 ..."
