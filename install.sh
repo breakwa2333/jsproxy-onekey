@@ -190,9 +190,9 @@ install() {
   log "nginx path: $NGX_DIR"
 
   log "下载代理服务 ..."
-  wget -o jsproxy.tar.gz $Release_URL
-  tar -xzvf jsproxy.tar.gz
-  rm -f jsproxy.tar.gz
+  wget -o jsproxy.zip $Release_URL
+  unzip jsproxy.zip
+  rm -f jsproxy.zip
 
   log "下载静态资源 ..."
   curl -o www.tar.gz $ZIP_URL/gh-pages
@@ -248,6 +248,8 @@ install_dependency(){
   echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" >> iptables-persistent.conf
   cat iptables-persistent.conf | debconf-set-selections
   apt-get install iptables-persistent -y
+  echo -e "${OK} ${GreenBG} 正在安装unzip ${Font}"
+  apt-get install unzip -y
 }
 
 adjust_host(){
