@@ -12,14 +12,14 @@ Info="${Green}[信息]${Font}"
 OK="${Green}[OK]${Font}"
 Error="${Red}[错误]${Font}"
 
-JSPROXY_VER=$(curl -L https://api.github.com/repos/v2ray/v2ray-core/tags | grep name | cut -d$'\n' -f1 | cut -d'"' -f4)
+JSPROXY_VER=$(curl -L https://api.github.com/repos/EtherDream/jsproxy/tags | grep name | cut -d$'\n' -f1 | cut -d'"' -f4)
 OPENRESTY_VER=1.15.8.1
 ONEKEY_VER=lab
 
 SRC_URL=https://raw.githubusercontent.com/breakwa2333/jsproxy-onekey/$ONEKEY_VER
 BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master
 ZIP_URL=https://codeload.github.com/EtherDream/jsproxy/tar.gz
-Release_URL=$(curl -L https://api.github.com/repos/v2ray/v2ray-core/tags | grep zipball_url | cut -d$'\n' -f1 | cut -d'"' -f4)
+Release_URL=$(curl -L https://api.github.com/repos/EtherDream/jsproxy/tags | grep zipball_url | cut -d$'\n' -f1 | cut -d'"' -f4)
 
 SUPPORTED_OS="Linux-x86_64"
 OS="$(uname)-$(uname -m)"
