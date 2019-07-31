@@ -12,7 +12,7 @@ Info="${Green}[信息]${Font}"
 OK="${Green}[OK]${Font}"
 Error="${Red}[错误]${Font}"
 
-JSPROXY_VER=$(curl -L https://api.github.com/repos/EtherDream/jsproxy/tags | grep name | cut -d$'\n' -f1 | cut -d'"' -f4)
+JSPROXY_VER=master
 OPENRESTY_VER=1.15.8.1
 ONEKEY_VER=lab
 
@@ -190,7 +190,7 @@ install() {
   log "nginx path: $NGX_DIR"
 
   log "下载代理服务 ..."
-  curl -o jsproxy.tar.gz $Release_URL
+  wget -o jsproxy.tar.gz $Release_URL
   tar zxf jsproxy.tar.gz
   rm -f jsproxy.tar.gz
 
