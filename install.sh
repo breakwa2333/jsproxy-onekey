@@ -190,9 +190,9 @@ install() {
   log "nginx path: $NGX_DIR"
 
   log "下载代理服务 ..."
-  wget -o jsproxy.zip $Release_URL
-  unzip jsproxy.zip
-  rm -f jsproxy.zip
+  wget -o jsproxy.tar.gz $Release_URL
+  unzip jsproxy.tar.gz
+  rm -f jsproxy.tar.gz
 
   log "下载静态资源 ..."
   curl -o www.tar.gz $ZIP_URL/gh-pages
