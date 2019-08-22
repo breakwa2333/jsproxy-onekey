@@ -12,7 +12,7 @@ Info="${Green}[信息]${Font}"
 OK="${Green}[OK]${Font}"
 Error="${Red}[错误]${Font}"
 
-JSPROXY_VER=0.1.0
+JSPROXY_VER=master
 OPENRESTY_VER=1.15.8.1
 ONEKEY_VER=master
 
