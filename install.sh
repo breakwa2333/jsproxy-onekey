@@ -161,10 +161,10 @@ gen_cert() {
       server/run.sh reload
 
       log "在线预览: $url"
+      else
+        err "证书申请失败！"
+        rm -rf $dist
       fi
-
-      err "证书申请失败！"
-      rm -rf $dist
   fi
 }
 
